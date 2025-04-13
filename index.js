@@ -11,8 +11,8 @@ const client = new Client({
 });
 
 // ID каналов Discord (замените на ваши)
-const CHEST_CHANNEL_ID = '1360944709857706149'; // ID канала для сундуков
-const EGG_CHANNEL_ID = '1360944810889969864';     // ID канала для яиц
+const CHEST_CHANNEL_ID = 'process.env.CHEST_CHANNEL_ID'; // ID канала для сундуков
+const EGG_CHANNEL_ID = 'process.env.EGG_CHANNEL_ID';     // ID канала для яиц
 
 // Хранилище для message_id (чтобы редактировать сообщения)
 const messageCache = new Map();
@@ -90,4 +90,4 @@ client.once('ready', () => {
 });
 
 // Запуск бота
-client.login('MTM2MDk0Mzc1NzU1NzQ5ODAzOA.G06Mnt.Zx_2khk2O50bf7Klz9jRbVpe5POAB2fTd89078'); // Замените на токен вашего бота
+client.login(process.env.DISCORD_TOKEN);
