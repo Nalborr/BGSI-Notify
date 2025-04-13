@@ -2,7 +2,6 @@ const { Client, EmbedBuilder, GatewayIntentBits } = require('discord.js');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-// Настройки бота
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -10,24 +9,25 @@ const client = new Client({
     ]
 });
 
-// ID каналов Discord (замените на ваши)
 const CHEST_CHANNEL_ID = 'process.env.CHEST_CHANNEL_ID'; // ID канала для сундуков
 const EGG_CHANNEL_ID = 'process.env.EGG_CHANNEL_ID';     // ID канала для яиц
 
-// Хранилище для message_id (чтобы редактировать сообщения)
 const messageCache = new Map();
 
-// Создание Express-приложения
 const app = express();
 app.use(bodyParser.json());
 
-// Обработчик HTTP-запросов
 app.post('/api/roblox', async (req, res) => {
     try {
+        console.log('Получен запрос:', JSON.stringify(req.body, null, 2));
         const { type, name, timer, luck } = req.body;
 
         if (type === 'chest') {
             const channel = client.channels.cache.get(CHEST_CHANNEL_ID);
+            if (!channel) {
+                console.error('Канал не найден:', CHEST_CHANNEL_ID);
+                return res.status(500).send('Channel not found');
+            }
             const embed = new EmbedBuilder()
                 .setTitle('🧰 Новый сундук появился!')
                 .setColor(0xFFD700)
@@ -39,16 +39,20 @@ app.post('/api/roblox', async (req, res) => {
 
             const cacheKey = `${name}-chest`;
             if (messageCache.has(cacheKey)) {
-                // Редактируем существующее сообщение
                 const msg = await channel.messages.fetch(messageCache.get(cacheKey));
                 await msg.edit({ embeds: [embed] });
+                console.log(`Обновлено: ${name}`);
             } else {
-                // Отправляем новое сообщение
                 const msg = await channel.send({ embeds: [embed] });
                 messageCache.set(cacheKey, msg.id);
+                console.log(`Отправлено: ${name}`);
             }
         } else if (type === 'egg') {
             const channel = client.channels.cache.get(EGG_CHANNEL_ID);
+            if (!channel) {
+                console.error('Канал не найден:', EGG_CHANNEL_ID);
+                return res.status(500).send('Channel not found');
+            }
             const embed = new EmbedBuilder()
                 .setTitle('🥚 Новое яйцо появилось!')
                 .setColor(0x00FF00)
@@ -61,33 +65,33 @@ app.post('/api/roblox', async (req, res) => {
 
             const cacheKey = `${name}-egg`;
             if (messageCache.has(cacheKey)) {
-                // Редактируем существующее сообщение
                 const msg = await channel.messages.fetch(messageCache.get(cacheKey));
                 await msg.edit({ embeds: [embed] });
+                console.log(`Обновлено: ${name}`);
             } else {
-                // Отправляем новое сообщение
                 const msg = await channel.send({ embeds: [embed] });
                 messageCache.set(cacheKey, msg.id);
+                console.log(`Отправлено: ${name}`);
             }
+        } else {
+            console.warn('Неизвестный тип:', type);
+            return res.status(400).send('Invalid type');
         }
 
         res.status(200).send('Success');
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Ошибка:', error);
         res.status(500).send('Error');
     }
 });
 
-// Запуск сервера
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
-// Событие готовности бота
 client.once('ready', () => {
     console.log(`Bot is ready as ${client.user.tag}`);
 });
 
-// Запуск бота
 client.login(process.env.DISCORD_TOKEN);
