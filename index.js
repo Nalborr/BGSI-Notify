@@ -9,8 +9,8 @@ const client = new Client({
     ]
 });
 
-const CHEST_CHANNEL_ID = 'process.env.CHEST_CHANNEL_ID'; // ID канала для сундуков
-const EGG_CHANNEL_ID = 'process.env.EGG_CHANNEL_ID';     // ID канала для яиц
+const CHEST_CHANNEL_ID = '1360944709857706149'; // ID канала для сундуков
+const EGG_CHANNEL_ID = '1360944810889969864';     // ID канала для яиц
 
 const messageCache = new Map();
 
